@@ -6,6 +6,7 @@ Created on 14 сент. 2016 г.
 import config_bot
 import telebot
 from SQLighter import SQLighter as SQLig
+import utils
 
 bot = telebot.TeleBot(config_bot.token)
 
@@ -20,6 +21,10 @@ def check_db(message):
     #print(a)
     db_worker.close()
     
-    
+@bot.message_handler(commands=['came'])   
+def user_came(message):
+    bot.send_message(utils.user_came(message.chat.id))
+
+ 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
