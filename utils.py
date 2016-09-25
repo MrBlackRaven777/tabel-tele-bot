@@ -11,28 +11,19 @@ import os
 
 def time_count(user_id,strdate):
     dbw = SQLighter(database_name)
-    #try:
-    if True:
+    try:
         all_time = "".join(dbw.read(user_id,strdate))
-        print(all_time)
         if len(all_time)>0:
             times = all_time.split('-')
-            print(times)
             if len(times)%2==0:
                 sum_time=[]
                 for i in range(0,len(times),2):
-                    
                     t1=dt.strptime(times[i],"%H:%M")
                     t2=dt.strptime(times[i+1],"%H:%M")
-                    print(t1)
-                    print(t2)
-                    print(t2-t1)
                     sum_time.append(t2-t1)
-                    print(sum_time)
                 summ = sum(sum_time,timedelta())
                 str_summ = str(summ)[:-3]
                 dt_summ = dt.strptime(str_summ,"%H:%M")
-                print(dt_summ)
                 if dt_summ.minute > 14 and dt_summ.minute < 45:
                     end_summ_hour = dt_summ.hour
                     end_summ_min = 30
@@ -45,8 +36,8 @@ def time_count(user_id,strdate):
                 return str(end_summ_hour) + ":" + str(end_summ_min)
             else:
                 return "Вы еще в офисе"
-    #except:
-        #pass
+    except:
+        pass
     
 def user_came(user_id):
     dbw = SQLighter(database_name)
