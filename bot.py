@@ -20,7 +20,8 @@ def user_left(message):
 
 @bot.message_handler(commands=['info'])
 def user_info(message):
-    SQLig.check_user()
+    pass
+    #SQLig.check_user(message.chat.id)
     
 if __name__ == '__main__':
     bot.polling(none_stop=True)
