@@ -7,5 +7,5 @@ import utils
 import os
 #dbw = SQLi(config_bot.database_name)
 
-utils.time_count(33261,'2016.09.25')
+utils.time_count(332761,'2016.09.25')
 #print( os.path.dirname(os.path.abspath(__file__)))

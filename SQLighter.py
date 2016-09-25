@@ -49,7 +49,8 @@ class SQLighter:
                 return self.cursor.execute("select " + column + " from Tabel where id =?",(user_id,)).fetchone()
             #else:
             except OperationalError:
-                return "Err"
+                return self.cursor.execute("select " + '"' + column + '"' + " from Tabel where id =?",(user_id,)).fetchone()
+                #return "Err"
       
       
     def upd(self,user_id,**kwargs):
@@ -68,7 +69,9 @@ class SQLighter:
                     nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
                     nowtime = dt.strftime(dt.now(), "%H:%M")
                     prev_time = self.read(user_id, '"' + nowdate + '"')[0]
-                    if len(prev_time)>0 and prev_time != "empty":
+                    if prev_time == None:
+                        corr_dict.update({'"' + nowdate + '"':nowtime})
+                    elif len(prev_time)>0 and prev_time != "empty":
                         corr_dict.update({'"' + nowdate + '"':prev_time + "-" +nowtime})
                     else:    
                         corr_dict.update({'"' + nowdate + '"':nowtime})

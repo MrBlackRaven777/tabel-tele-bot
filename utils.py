@@ -9,10 +9,11 @@ from _datetime import datetime as dt, timedelta
 from time import strptime
 import os
 
-def time_count(user_id,date):
+def time_count(user_id,strdate):
     dbw = SQLighter(database_name)
-    try:
-        all_time = str(dbw.read(user_id,'"'+date+'"')[0])
+    #try:
+    if True:
+        all_time = "".join(dbw.read(user_id,strdate))
         print(all_time)
         if len(all_time)>0:
             times = all_time.split('-')
@@ -27,11 +28,25 @@ def time_count(user_id,date):
                     print(t2)
                     print(t2-t1)
                     sum_time.append(t2-t1)
-                    print(sum(sum_time))
-            #else:
-                #return "Вы еще в офисе"
-    except:
-        pass
+                    print(sum_time)
+                summ = sum(sum_time,timedelta())
+                str_summ = str(summ)[:-3]
+                dt_summ = dt.strptime(str_summ,"%H:%M")
+                print(dt_summ)
+                if dt_summ.minute > 14 and dt_summ.minute < 45:
+                    end_summ_hour = dt_summ.hour
+                    end_summ_min = 30
+                elif dt_summ.minute > 44:
+                    end_summ_min = "00"
+                    end_summ_hour = dt_summ.hour + 1
+                elif dt_summ.minute < 15:
+                    end_summ_hour = dt_summ.hour
+                    end_summ_min = "00"
+                return str(end_summ_hour) + ":" + str(end_summ_min)
+            else:
+                return "Вы еще в офисе"
+    #except:
+        #pass
     
 def user_came(user_id):
     dbw = SQLighter(database_name)
@@ -55,6 +70,7 @@ def user_left(user_id):
     dbw = SQLighter(database_name)
     dbw.check_user(user_id)
     onWork = dbw.read(user_id,"onWork") 
+    nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
     if onWork[0] == "False":
         return "Вы еще не на работе"
     elif onWork == None:
@@ -64,7 +80,7 @@ def user_left(user_id):
     elif onWork[0] == "True" or "empty":
         time = dt.strftime(dt.now(), "%H:%M")
         dbw.upd(user_id,onWork="False",timeOn=time)
-        return "Вы ушли в {}".format(time)
+        return "Вы ушли в {0}. Общее время работы: {1}".format(time,time_count(user_id, nowdate))
     else:
         return "Чето не так"
     dbw.close()
