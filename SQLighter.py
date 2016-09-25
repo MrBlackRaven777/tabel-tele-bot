@@ -69,7 +69,7 @@ class SQLighter:
                     nowtime = dt.strftime(dt.now(), "%H:%M")
                     prev_time = self.read(user_id, '"' + nowdate + '"')[0]
                     if len(prev_time)>0 and prev_time != "empty":
-                        corr_dict.update({'"' + nowdate + '"':prev_time + " - " +nowtime})
+                        corr_dict.update({'"' + nowdate + '"':prev_time + "-" +nowtime})
                     else:    
                         corr_dict.update({'"' + nowdate + '"':nowtime})
             for key in dictio:
