@@ -7,6 +7,7 @@ from SQLighter import SQLighter
 from config_bot import database_name
 from _datetime import datetime as dt, timedelta
 from time import strptime
+import os
 
 def time_count(user_id,date):
     dbw = SQLighter(database_name)
@@ -17,15 +18,20 @@ def time_count(user_id,date):
             times = all_time.split('-')
             print(times)
             if len(times)%2==0:
+                sum_time=[]
                 for i in range(0,len(times),2):
+                    
                     t1=dt.strptime(times[i],"%H:%M")
-                
                     t2=dt.strptime(times[i+1],"%H:%M")
                     print(t1)
                     print(t2)
                     print(t2-t1)
-    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                
+                    sum_time.append(t2-t1)
+                    print(sum(sum_time))
+            #else:
+                #return "Вы еще в офисе"
+    except:
+        pass
     
 def user_came(user_id):
     dbw = SQLighter(database_name)
