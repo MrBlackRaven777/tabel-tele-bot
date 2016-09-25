@@ -25,6 +25,14 @@ class SQLighter:
         except:
             return false
 
+    def check_user(self,user_id):
+        usr = self.connection.execute('SELECT * FROM Tabel WHERE id=?',(user_id,)).fetchone()
+        if usr == None:
+            self.add(user_id,stavka=150)
+        else:
+            return "ok"
+            
+
 
     def check_date(self):
         nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
@@ -55,17 +63,22 @@ class SQLighter:
         try:
             for key in kwargs:
                 if key in dictio:
-                    dictio[key]=kwargs[key]
+                    dictio[key]=kwargs[key]                
+                elif key == "timeOn":
+                    nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
+                    nowtime = dt.strftime(dt.now(), "%H:%M")
+                    prev_time = self.read(user_id, '"' + nowdate + '"')[0]
+                    if len(prev_time)>0 and prev_time != "empty":
+                        corr_dict.update({'"' + nowdate + '"':prev_time + " - " +nowtime})
+                    else:    
+                        corr_dict.update({'"' + nowdate + '"':nowtime})
             for key in dictio:
                 if dictio[key]=='':
                     #dictio.pop(key)
                     pass
                 #elif '-' in key:
                 #    corr_dict['"' + key + '"'] = dictio[key]  - были проблемы с форматом дат с тире, сделал их  с точкой
-                elif key == "timeOn":
-                    nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
-                    nowtime = dt.strftime(dt.now(), "%H:%M")
-                    corr_dict.update({nowdate:nowtime})
+
                 else:
                     corr_dict[key]=dictio[key]
             
@@ -77,76 +90,23 @@ class SQLighter:
             self.cursor.execute("update Tabel set " + colstr + " where id = ?",(user_id,))
             #print(" success")
             self.connection.commit()
-            return("Вы были успешно добавлены")
+            return "Вы были успешно добавлены"
         except ZeroDivisionError:
-            return("Возникла непредвиденная ошибка при добавлении в базу (Ошибка 3)")
+            return "Возникла непредвиденная ошибка при добавлении в базу (Ошибка 3)"
     
     
     def add(self,user_id, **kwargs):
          #print( "insert into Tabel values (" + ", ".join(["?" for i in get_columns()])+"),(user_id,"+",".join([str(value) for key,value in kwargs.items()])+","*(len(get_columns())-len(kwargs.items())-1)+")")
          arg_list = [user_id]
          for i in range(len(self.get_columns())-1):
-             arg_list.append("empty")
+             arg_list.append("empty")        
          self.connection.execute("insert into Tabel values (" + ", ".join(["?" for i in self.get_columns()])+")",(arg_list))  
          self.connection.commit()
-         right_kwargs=",".join("{}={}".format(key,value) for key,value in kwargs.items())
-         return self.upd(user_id, **kwargs)
+         if len(kwargs)>0:
+             right_kwargs=",".join("{}={}".format(key,value) for key,value in kwargs.items())
+             return self.upd(user_id, **kwargs)
           
       
-      
-            
-    def modify_db(user_id, mod_type = "read", **kwargs):
-        """ Получаем одну строку с нужным нам id """
-        #with self.connection:
-        if mod_type == "read":
-         if 'column' in kwargs:
-          return c.execute("select " + kwargs['column'] + " from Tabel where id =?",(user_id,)).fetchone()
-         else:
-          return false
-       #не забыть ввести проверку на наличие колонки, мб отдельной функцией
-        elif mod_type == "upd":
-         dictio = {}
-         corr_dict={}
-         tableinf = c.execute("pragma table_info(Tabel)").fetchall()
-         for i in range(len(tableinf)):
-          dictio.update({tableinf[i][1]:""})
-         try:
-          for key in kwargs:
-           if key in dictio:
-            dictio[key]=kwargs[key]
-          for key in dictio:
-           if dictio[key]=='':
-            #dictio.pop(key)
-            print(key + " empt")
-           elif '-' in key:
-            corr_dict['"' + key + '"'] = dictio[key]            
-           else:
-            corr_dict[key]=dictio[key]
-            
-          nocol = list(filter(lambda x:x not in dictio.keys(),kwargs.keys())) 
-          if len(nocol)>0:
-           print( "no such column: {}".format(", ". join(nocol)))
-          colstr = ', '.join("{!s}={!r}".format(key,val) for (key,val) in corr_dict.items())
-          print (" colstr= " + colstr)
-          c.execute("update Tabel set " + colstr + " where id = ?",(user_id,))
-          print(" success")
-          conn.commit()
-          return("ok")
-         except ZeroDivisionError:
-          print("err")
-        elif mod_type=="add":
-         #print( "insert into Tabel values (" + ", ".join(["?" for i in get_columns()])+"),(user_id,"+",".join([str(value) for key,value in kwargs.items()])+","*(len(get_columns())-len(kwargs.items())-1)+")")
-         arg_list = [user_id]
-         for i in range(len(get_columns())-1):
-          arg_list.append("empty")
-         c.execute("insert into Tabel values (" + ", ".join(["?" for i in get_columns()])+")",(arg_list))  
-         conn.commit()
-         right_kwargs=",".join("{}={}".format(key,value) for key,value in kwargs.items())
-         #    print( ["no" for i in range(len(get_columns())-1)])
-         print (right_kwargs)
-         return modify_db(user_id, "upd", **kwargs)
-          #self.cursor.execute("insert into Tabel
-
     def close(self):
         """ Закрываем текущее соединение с БД """
         self.connection.close()
