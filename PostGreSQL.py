@@ -1,7 +1,7 @@
 import sqlite3
 from _sqlite3 import OperationalError
 from datetime import datetime as dt
-#Этот класс для работы с sqlite3
+#Этот класс для работы с psycopg2
 class SQLighter:
     
     def __init__(self, database):

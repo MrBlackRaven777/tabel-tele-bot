@@ -50,13 +50,13 @@ def user_came(user_id):
     elif onWork == None:
         return "Not in base"
     elif onWork[0] == "Err":
-        return "Происзошла какая-то ошибка. Попробуйте позже"
+        return "Происзошла какая-то ошибка. Попробуйте позже(ошибка 1)"
     elif onWork[0] == "False" or "empty":
         time = dt.strftime(dt.now(), "%H:%M")
         dbw.upd(user_id,onWork="True",timeOn=time)
         return "Вы пришили в {}".format(time)
     else:
-        return "Чето не так"
+        return "Чето не так(ошибка 3)"
     dbw.close()
     
 def user_left(user_id):
@@ -73,7 +73,10 @@ def user_left(user_id):
     elif onWork[0] == "True" or "empty":
         time = dt.strftime(dt.now(), "%H:%M")
         dbw.upd(user_id,onWork="False",timeOn=time)
-        return "Вы ушли в {0}. Общее время работы: {1}".format(time,time_count(user_id, nowdate))
+        work_time = time_count(user_id, nowdate)
+        work_time_number = int(dt.strptime(work_time,"%H:%M").hour) +  int(dt.strptime(work_time,"%H:%M").minute)/60
+        stavka = dbw.read(user_id,"stavka")
+        return "Вы ушли в {0}. Общее время работы: {1}. Общий заработок за сегодня: {3}".format(time, work_time,work_time, work_time_number * int(stavka[0]))
     else:
-        return "Чето не так"
+        return "Чето не так(ошибка 2)"
     dbw.close()
