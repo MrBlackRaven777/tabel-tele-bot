@@ -35,9 +35,11 @@ def time_count(user_id,strdate):
                     end_summ_min = "00"
                 return str(end_summ_hour) + ":" + str(end_summ_min)
             else:
-                return "Вы еще в офисе"
+                return "Вы еще в офисе."
+        else:
+            return "Вы не были на работе в указанную дату: "+strdate
     except:
-        pass
+        return "Что-то пошло не так (ошибка 4)"
     
 def user_came(user_id):
     dbw = SQLighter(database_name)
