@@ -5,7 +5,6 @@ Created on 14 сент. 2016 г.
 '''
 import config_bot
 import telebot
-from SQLighter import SQLighter as SQLig
 import utils
 
 bot = telebot.TeleBot(config_bot.token)

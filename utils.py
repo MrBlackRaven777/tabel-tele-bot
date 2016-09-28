@@ -3,14 +3,14 @@ Created on 14 сент. 2016 г.
 
 @author: voskresenskiy
 '''
-from SQLighter import SQLighter
+from PostGreSQL import PostGreSQL
 from config_bot import database_name
 from _datetime import datetime as dt, timedelta
 from time import strptime
 import os
 
 def time_count(user_id,strdate):
-    dbw = SQLighter(database_name)
+    dbw = PostGreSQL(database_name)
     try:
         all_time = "".join(dbw.read(user_id,strdate))
         if len(all_time)>0:
@@ -42,7 +42,7 @@ def time_count(user_id,strdate):
         return "Что-то пошло не так (ошибка 4)"
     
 def user_came(user_id):
-    dbw = SQLighter(database_name)
+    dbw = PostGreSQL()
     dbw.check_user(user_id)
     onWork = dbw.read(user_id,"onWork") 
     if onWork[0] == "True":
@@ -60,7 +60,7 @@ def user_came(user_id):
     dbw.close()
     
 def user_left(user_id):
-    dbw = SQLighter(database_name)
+    dbw = PostGreSQL()
     dbw.check_user(user_id)
     onWork = dbw.read(user_id,"onWork") 
     nowdate = dt.strftime(dt.now(), "%Y.%m.%d")

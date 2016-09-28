@@ -1,17 +1,20 @@
-import sqlite3
-from _sqlite3 import OperationalError
+import psycopg2
+from psycopg2 import ProgrammingError
 from datetime import datetime as dt
+from psycopg2.psycopg1 import cursor
+#from config_bot import database_name as database
+
 #Этот класс для работы с psycopg2
-class SQLighter:
+class PostGreSQL:
     
-    def __init__(self, database):
-        self.connection = sqlite3.connect(database)
+    def __init__(self):
+        self.connection = psycopg2.connect("dbname=tabel user=postgres password=4589163")
         self.cursor = self.connection.cursor()
 
     def select_single(self, user_id):
         """ Получаем одну строку с нужным нам id """
         with self.connection:
-            tr = self.cursor.execute('SELECT * FROM Tabel WHERE id = ?', (user_id,)).fetchone()
+            tr = self.cursor.execute('SELECT * FROM Tabel WHERE id = ?', (user_id,))
             if tr == []:
                 self.cursor.execute('INSERT INTO Tabel VALUES (?,?,?,?)', (user_id,"150","false",""))
                 self.connection.commit()
@@ -20,25 +23,31 @@ class SQLighter:
                 return "Your id is {}".format(tr[0])
             
     def get_columns(self):
-        try:
-            return self.cursor.execute("pragma table_info(Tabel)").fetchall()
-        except:
-            return false
+        #try:
+            #column_names = []
+            #self.cursor.execute("""select column_name from information_schema.columns where table_name='tabel'""")
+            #column_names = [row[0] for row in self.cursor]
+            #return column_names
+            self.cursor.execute("Select * FROM Tabel")
+            colnames = [desc[0] for desc in self.cursor.description]
+            return colnames
+        #except:
+            #return "false"
 
     def check_user(self,user_id):
-        usr = self.connection.execute('SELECT * FROM Tabel WHERE id=?',(user_id,)).fetchone()
-        if usr == None:
+        try:
+            usr = self.cursor.execute('SELECT * FROM Tabel WHERE id=?',(user_id,))
+        except ProgrammingError:
             self.add(user_id,stavka=150)
-        else:
-            return "ok"
+
             
 
-
     def check_date(self):
-        nowdate = dt.strftime(dt.now(), "%Y.%m.%d")
+        nowdate = dt.date(dt.now())
         try:
-            return self.cursor.execute("ALTER TABLE Tabel ADD COLUMN '%s' 'TEXT'" % nowdate)
-        except OperationalError:
+            self.cursor.execute('ALTER TABLE Tabel ADD COLUMN "%s" TEXT' % nowdate)
+            self.connection.commit()
+        except ProgrammingError:
             return "already exists"
         
         
@@ -46,10 +55,10 @@ class SQLighter:
         with self.connection:
             #if 'column' in kwargs:
             try:
-                return self.cursor.execute("select " + column + " from Tabel where id =?",(user_id,)).fetchone()
+                return self.cursor.execute("select " + column + " from Tabel where id =?",(user_id,))
             #else:
             except OperationalError:
-                return self.cursor.execute("select " + '"' + column + '"' + " from Tabel where id =?",(user_id,)).fetchone()
+                return self.cursor.execute("select " + '"' + column + '"' + " from Tabel where id =?",(user_id,))
                 #return "Err"
       
       
