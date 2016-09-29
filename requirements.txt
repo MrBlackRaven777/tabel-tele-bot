@@ -1,4 +1,4 @@
-pytelebotapi==2.1.7
+pytelegrambotapi==2.1.7
 requests==2.11.1
 six==1.10.0
 psycopg2==2.6.2
