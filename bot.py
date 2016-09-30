@@ -10,7 +10,8 @@ import utils
 bot = telebot.TeleBot(config_bot.token)
     
 @bot.message_handler(content_type=['text'])       
-bot.send_message(message.chat.id,message.chat.id)
+def repeart(message):
+    bot.send_message(message.chat.id,message.chat.id)
 	
 @bot.message_handler(commands=['came'])   
 def user_came(message):
